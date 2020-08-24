@@ -12,4 +12,6 @@ sudo /usr/local/bin/auto_update_system_packages.sh
 sudo /usr/local/bin/create_cronjob_for_crontab_monitor.sh
 sudo /usr/local/bin/ssl_certificate.sh
 sudo /usr/local/bin/mariadb_settings.sh 
+sudo /usr/local/bin/node_js_settings.sh
+sudo /usr/local/bin/nginx_settings.sh
 echo "Installation complete. Please reboot the system in order for portsentry to fully activate."

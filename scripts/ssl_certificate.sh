@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
-sudo openssl dhparam -out /etc/nginx/dhparam.pem 4096
+sudo openssl dhparam -out /etc/nginx/dhparam.pem 1024
 sudo touch /etc/nginx/snippets/self-signed.conf
 sudo echo "ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;">>/etc/nginx/snippets/self-signed.conf
 sudo echo "ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;">>/etc/nginx/snippets/self-signed.conf
