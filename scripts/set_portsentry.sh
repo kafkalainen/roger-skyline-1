@@ -7,3 +7,4 @@ sed -i 's/BLOCK_TCP=\"0\"/BLOCK_TCP=\"1\"/' /etc/portsentry/portsentry.conf
 sed -i 's/KILL_ROUTE=\"\/sbin\/route add -host $TARGET$ reject\"/#KILL_ROUTE=\"\/sbin\/route add -host $TARGET$ reject\"/' /etc/portsentry/portsentry.conf
 sed -i 's/#KILL_ROUTE=\"\/sbin\/iptables -I INPUT -s $TARGET$ -j DROP\"/KILL_ROUTE=\"\/sbin\/iptables -I INPUT -s $TARGET$ -j DROP\"/' /etc/portsentry/portsentry.conf
 sudo /etc/init.d/portsentry start
+echo "Ports are protected by a powerful seal. I mean portsentry."

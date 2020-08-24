@@ -88,20 +88,14 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 - To test that rules work for the firewall, you can delete them by using sudo ufw numbered.
 	sudo ufw numbered 
 	sudo ufw delete <number>
-- To test that firewall works, you can try to access 192.168.56.2 with your browser, it should show apache2 page. 
+- To test that firewall works, you can try to access 192.168.56.2 with your browser, it should show apache2 page, but when you remove the port 80 from the list, it will no longer work. 
 [ ] You have to set a DOS (Denial Of Service Attack) protection on your open ports of your VM.
 - I installed fail2ban after running comparison between ssh-guard and fail2ban.
 	sudo apt-get install fail2ban
 - We can check status of the service:
 	systemctl status fail2ban
 	fail2ban-client status
-
-- fail2ban configuration is split across two files:
-	/etc/fail2ban/fail2ban.conf
-	/etc/fail2ban/jail.conf
-- We are going to set sshd settings through jail.local file, since jail.conf is overwritten when updated.
-	sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-	systemctl status fail2ban
+- We are going to set sshd settings through jail.d folder by adding a local file, since jail.conf is overwritten when updated. fail2ban is configured so, that it will first do the conf file and the local settings will override ones that have been set by conf.
 - You cannot start fail2ban, if you have settings in jail.local that try to control a program that you do not have.
 	systemctl restart fail2ban
 - You can ban an IP with following command:
@@ -129,8 +123,9 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	This led to that portsentry blocked my SSH access from 192.168.56.1
 	To clean my trace from the server, I edited following files:
 	/etc/hosts.deny
-	/var/lib/portsentry.blocked.atcp
-	/var/lib/portsentry.blocked.tcp
+	/var/lib/portsentry/portsentry.blocked.atcp
+	/var/lib/portsentry/portsentry.blocked.tcp
+	/var/lib/portsentry/portsentry.history
 	and checked if 192.168.56.1 appears on the netstat list,
 	to clear the files, for the ip, it could be achieved with a shell script.
 
@@ -169,13 +164,11 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 - Self-Signed SSL
 [ ] You have to set a web server who should BE available on the VM’s IP
 or an host(init.login.com for exemple) Choose between nginx and apache.
-- I used nginx to create a webserver.
-	sudo apt-get install nginx
-	sudo ufw enable
-	sudo ufw allow 'Nginx Full'
-	sudo ufw allow 'Nginx HTTP'
-	sudo ufw allow 'Nginx HTTPS'
-
+- [Tutorial on Wordpress on LEMP](https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-lemp-on-ubuntu-18-04)
+- LEMP comes from words Linux, Nginx (pronounced enginex), MySQL and PHP.
+- [Tutorial on installing LEMP stack](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04)
+- I initially felt more  to create a webserver.
+	
 [ ] You have to set a self-signed SSL on all of your services.
 - req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
 - openssl x509 -text -noout -in certificate.pem
@@ -233,9 +226,8 @@ NextCloud
 [Watch a Video of the configuration here](https://www.youtube.com/watch?v=lhWSek6zyrs)
 
 - NEXT TASK:
-	- Install mariaDb database server:
-	sudo apt install mariadb-server
-	sudo mysql_secure_installation
+	- Instead of Wordpress, do a proxy Node.js backend with content!
+	- https://www.sitepoint.com/configuring-nginx-ssl-node-js/
 	- Create a shell script that removes blocked ip from the files, and reboots the computer.
 
 FUTURE:

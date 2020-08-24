@@ -5,3 +5,4 @@ sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_
 sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
 echo "AllowUsers $USER" >>/etc/ssh/sshd_config
 sudo service ssh restart
+echo "Shh configuration set running."

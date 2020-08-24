@@ -42,8 +42,8 @@ systemctl stop snapd.apparmor.service
 systemctl stop snapd.seeded.service
 systemctl stop snapd.service
 systemctl stop snapd.socket
-sudo apt purge snapdr
-rm -rf ~/snap
+sudo apt purge snapd
+sudo rm -rf ~/snap
 sudo rm -rf /snap
 sudo rm -rf /var/snap
 sudo rm -rf /var/lib/snapd
@@ -72,3 +72,4 @@ sudo rm -rf /var/lib/snapd
 systemctl stop apt-daily.service apt-daily-upgrade.service apt-daily.timer apt-daily-upgrade.timer
 systemctl mask apt-daily.service apt-daily-upgrade.service apt-daily.timer apt-daily-upgrade.timer
 #These services were deactivated due we have cronjob to fetch newest updates once a week.
+echo "Stopped extra services."
