@@ -162,14 +162,15 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 
 ##Web part
 - Self-Signed SSL
-[ ] You have to set a web server who should BE available on the VM’s IP
+[x] You have to set a web server who should BE available on the VM’s IP
 or an host(init.login.com for exemple) Choose between nginx and apache.
 - [Tutorial on Wordpress on LEMP](https://www.digitalocean.com/community/tutorials/how-to-install-wordpress-with-lemp-on-ubuntu-18-04)
 - LEMP comes from words Linux, Nginx (pronounced enginex), MySQL and PHP.
 - [Tutorial on installing LEMP stack](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04)
-- I initially felt more  to create a webserver.
+- I initially felt more inclined to create a webserver with Apache2, but since I've
+already used it, I decided to give nginx a go.
 	
-[ ] You have to set a self-signed SSL on all of your services.
+[x] You have to set a self-signed SSL on all of your services.
 - req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
 - openssl x509 -text -noout -in certificate.pem
 - openssl pkcs12 -inkey key.pem -in certificate.pem -export -out certificate.p12
@@ -180,7 +181,11 @@ or an host(init.login.com for exemple) Choose between nginx and apache.
 
 ##Deployment part
 [ ] Propose a functional solution for deployment automation.
-
+- I've created scripts that automate server deployment from installation onwards.
+- First you will use ./transfer_files.sh, which will move necessary files to the server using your public key.
+- Second you will start up the server, and bash the ./move_files and type in the install_scripts command.
+- Reboot the computer.
+- Start up Node.js server. 
 ##VPS providers
 - VPS (Virtual Private Server)
 - VPS also has a firewall to add an extra layer of protection to your server.

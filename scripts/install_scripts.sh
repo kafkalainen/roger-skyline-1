@@ -13,5 +13,7 @@ sudo /usr/local/bin/create_cronjob_for_crontab_monitor.sh
 sudo /usr/local/bin/ssl_certificate.sh
 sudo /usr/local/bin/mariadb_settings.sh 
 sudo /usr/local/bin/node_js_settings.sh
+sudo /usr/local/bin/deploy_hiddengames.sh
 sudo /usr/local/bin/nginx_settings.sh
+sudo /usr/local/bin/create_cronjob_for_node_js.sh
 echo "Installation complete. Please reboot the system in order for portsentry to fully activate."
