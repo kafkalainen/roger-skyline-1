@@ -9,7 +9,7 @@ I also chose Oracle VM's VirtualBox to create the virtual network. For the virtu
 [x] A disk size 8 GB
 - In installer I chose to create 8 GB static VDI.
 [x] Have at least one 4.2 Gb partition
-- During the Ubuntu installation I chose to create partition of 4.2GB for / and mount the rest for /home as a logical partition.
+- During the Ubuntu installation I chose to create partition of 4.2GB for / and mount the rest for /var, since the website is served from var/www/hiddengames folder.
 [x] It will also have to be up to date as well as the whole packages installed to meet the demands of this subject.
 - When the installation was complete, I updated the system with:
 	sudo apt-get update -y && sudo apt-get upgrade
@@ -121,6 +121,8 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	http://192.168.42.2/whatever.exe          < (Response 404 not found)
 	http://192.168.42.2/hey.asp
 	if last entry gets blocked, it is working.
+
+- Nginx is designed to be a shock absorber for a website or an application, but that doesn't mean that it is unbreakable. To withstand slowloris attacks, I increased maximum amountof filedescriptors and users, so that attacker needs to have 1000 instances to bring it down. I also activated Nginx limit_req_zone module, which logs if requestlimits are broken when server is contacted.
 
 [x] You have to set a protection against scans on your VM’s open ports
 	I've installed portsentry to guard VM's open ports. To configure settings, I did a following shell script:

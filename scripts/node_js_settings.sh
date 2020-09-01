@@ -2,7 +2,6 @@
 mkdir /var/www/hiddengames
 cd /var/www/hiddengames
 npm install -g yarn
-sudo chown -R www-data:www-data /var/www/hiddengames
 npm init react-app /var/www/hiddengames
 npm install --prefix /var/www/hiddengames express
 npm install --prefix /var/www/hiddengames body-parser
