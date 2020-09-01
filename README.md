@@ -7,20 +7,20 @@ I also chose Oracle VM's VirtualBox to create the virtual network. For the virtu
 	ipv4	192.168.56.1
 	subnet	255.255.255.252
 [x] A disk size 8 GB
-In installer I chose to create 8 GB static VDI.
+- In installer I chose to create 8 GB static VDI.
 [x] Have at least one 4.2 Gb partition
-During the installation I chose to create partition of 4.2GB for / and mount the rest for /home as a logical partition.
+- During the Ubuntu installation I chose to create partition of 4.2GB for / and mount the rest for /home as a logical partition.
 [x] It will also have to be up to date as well as the whole packages installed to meet the demands of this subject.
 - When the installation was complete, I updated the system with:
 	sudo apt-get update -y && sudo apt-get upgrade
 #Network and Security
 [x] You must create a non-root user to connect to the machine and work.
-- During the installation I created kafkan223 as a non-root user.
+- During the installation I created user as a non-root user.
 [x] Use sudo, with this user, to be able to perform operation requiring special rights.
 - Ubuntu 20.04 comes preinstalled with sudo, and created user kafkan223 
 was given sudo priviledges. Root user in general is locked in Ubuntu.
 - To add user to usergroup sudoers, I use following command:
-	sudo usermod -aG sudo kafkan223
+	sudo usermod -aG sudo <username>
 - If I want to achieve giving sudo priviledges by shell script, I would do:
 	touch add_sudo_user.sh
 
@@ -45,7 +45,7 @@ you need to pass the current env variables.
 	echo "      dhcp4: true">>/etc/netplan/00-static-ip-config.yaml
 	echo "    enp0s8:">>/etc/netplan/00-static-ip-config.yaml
 	echo "      addresses:">>/etc/netplan/00-static-ip-config.yaml
-	echo "      - 192.168.56.2/30">>/etc/netplan/00-static-ip-config.yaml
+	echo "      - 192.168.42.2/30">>/etc/netplan/00-static-ip-config.yaml
 	echo "      nameservers:">>/etc/netplan/00-static-ip-config.yaml
 	echo "        addresses:">>/etc/netplan/00-static-ip-config.yaml
 	echo "        - 1.1.1.1">>/etc/netplan/00-static-ip-config.yaml
@@ -81,7 +81,7 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	sudo ufw default allow outgoing
 	sudo ufw allow from 192.168.56.1 proto tcp to any port 50486
 - This allows access from my desktop, and denies inbound connections and allows ones out.
-	sudo ufw allow 443
+	sudo ufw allow Nginx Full
 - This allows HTTPS connections for serving the website.
 	sudo ufw enable
 - This enables the firewall.
@@ -89,18 +89,39 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	sudo ufw numbered 
 	sudo ufw delete <number>
 - To test that firewall works, you can try to access 192.168.56.2 with your browser, it should show apache2 page, but when you remove the port 80 from the list, it will no longer work. 
-[ ] You have to set a DOS (Denial Of Service Attack) protection on your open ports of your VM.
+[x] You have to set a DOS (Denial Of Service Attack) protection on your open ports of your VM.
 - I installed fail2ban after running comparison between ssh-guard and fail2ban.
 	sudo apt-get install fail2ban
 - We can check status of the service:
 	systemctl status fail2ban
 	fail2ban-client status
-- We are going to set sshd settings through jail.d folder by adding a local file, since jail.conf is overwritten when updated. fail2ban is configured so, that it will first do the conf file and the local settings will override ones that have been set by conf.
-- You cannot start fail2ban, if you have settings in jail.local that try to control a program that you do not have.
-	systemctl restart fail2ban
+- I set sshd settings through jail.local file, since jail.conf is overwritten when updated. fail2ban is configured so, that it will first do the conf file and the local settings will override ones that have been set by conf.
 - You can ban an IP with following command:
 	sudo fail2ban-client set sshd banip <ip-address>
 	sudo fail2ban-client set sshd unbanip <ip-address>
+- To check individual jails, use:
+	sudo fail2ban-client status <jail-name>
+- I've created custom jails to fail2ban for nginx.
+	sshd:
+
+	
+	http-get-dos:
+	Blocks simple get DoS attacks.
+	tested with:
+	nikto -h 192.168.42.2 -C all
+	slowloris 192.168.42.2 
+
+	To test no script bot checker:
+
+	http://192.168.42.2/test.asp
+	http://192.168.42.2/test.cgi       < (Response 404 not found)
+	http://192.168.42.2/test.pl         < (Response 404 not found)
+	http://192.168.42.2/test.scgi      < (Response 404 not found)
+	http://192.168.42.2/somethingelse.asp   < (Response 404 not found)
+	http://192.168.42.2/whatever.exe          < (Response 404 not found)
+	http://192.168.42.2/hey.asp
+	if last entry gets blocked, it is working.
+
 [x] You have to set a protection against scans on your VM’s open ports
 	I've installed portsentry to guard VM's open ports. To configure settings, I did a following shell script:
 
@@ -176,16 +197,20 @@ already used it, I decided to give nginx a go.
 - openssl pkcs12 -inkey key.pem -in certificate.pem -export -out certificate.p12
 - openssl pkcs12 -in certificate.p12 -noout -info
 
-[ ] You have to set a web "application" from those choices.
-- I will set our game's prequel to the server. 
+[x] You have to set a web "application" from those choices.
+- I have set our outdoor escaperoom's game to the server. 
 
 ##Deployment part
-[ ] Propose a functional solution for deployment automation.
+[x] Propose a functional solution for deployment automation.
 - I've created scripts that automate server deployment from installation onwards.
+- Set username kafkan223, and set 192.168.42.2 as a static ip.
 - First you will use ./transfer_files.sh, which will move necessary files to the server using your public key.
 - Second you will start up the server, and bash the ./move_files and type in the install_scripts command.
 - Reboot the computer.
-- Start up Node.js server. 
+- Go to the page by using your browser 192.168.56.2
+- For deployment automation, I would use Github action hook, which would run deploy_hiddengames.sh on the server.
+cronjob for automation:
+*/1 * * * * cd /home/kafkan223/hiddengames_project && git fetch --all && git checkout --force "origin/master" && /etc/usr/
 ##VPS providers
 - VPS (Virtual Private Server)
 - VPS also has a firewall to add an extra layer of protection to your server.
@@ -231,9 +256,10 @@ NextCloud
 [Watch a Video of the configuration here](https://www.youtube.com/watch?v=lhWSek6zyrs)
 
 - NEXT TASK:
-	- Instead of Wordpress, do a proxy Node.js backend with content!
-	- https://www.sitepoint.com/configuring-nginx-ssl-node-js/
-	- Create a shell script that removes blocked ip from the files, and reboots the computer.
+	- Test that page works agains DoS attacks with nikto!
+	- nikto -h 192.168.56.2 -C all
+	- pingflood, synflood and slowloris.
+
 
 FUTURE:
 You can buy a domain name.
