@@ -1,2 +1,2 @@
 #!/bin/bash
-shasum < /home/joonasnivala/VirtualBox\ VMs/New\ group/hiddenv15/hiddenv15.vdi
+shasum < /home/joonasnivala/VirtualBox\ VMs/New\ group/hiddenv$1/hiddenv$1.vdi

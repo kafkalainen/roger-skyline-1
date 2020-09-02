@@ -109,7 +109,9 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	Blocks simple get DoS attacks.
 	tested with:
 	nikto -h 192.168.42.2 -C all
-	slowloris 192.168.42.2 
+	slowloris 192.168.42.2
+	flood attack: hping3 -S --flood -V -p 80 192.168.42.2
+	ab -k -c 5 -n 500 192.168.42.2
 
 	To test no script bot checker:
 
@@ -210,7 +212,8 @@ already used it, I decided to give nginx a go.
 - Second you will start up the server, and bash the ./move_files and type in the install_scripts command.
 - Reboot the computer.
 - Go to the page by using your browser 192.168.56.2
-- For deployment automation, I would use Github action hook, which would run deploy_hiddengames.sh on the server.
+- For deployment automation, I use cron script that uses deployment key to check every five minutes if the head master commit differs from the one that is already on the server, and downloads latest version, builds it and moves it into a var/www/hiddengames folder. To do this, run auto_deploygithub_app.sh
+
 cronjob for automation:
 */1 * * * * cd /home/kafkan223/hiddengames_project && git fetch --all && git checkout --force "origin/master" && /etc/usr/
 ##VPS providers

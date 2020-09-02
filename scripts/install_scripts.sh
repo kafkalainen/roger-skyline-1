@@ -15,5 +15,6 @@ sudo /usr/local/bin/mariadb_settings.sh
 sudo /usr/local/bin/node_js_settings.sh
 sudo /usr/local/bin/deploy_hiddengames.sh
 sudo /usr/local/bin/nginx_settings.sh
+sudo /usr/local/bin/edit_ufw_service.sh
 sudo --preserve-env=USER /usr/bin/env /usr/local/bin/create_cronjob_for_node_js.sh
-echo "Installation complete. Please reboot the system in order for portsentry to fully activate and to set webpage running."
+echo "Installation complete. Please reboot the system in order for portsentry to fully activate and to set webpage running. To start automatic deployment, please use ssh to enter server and sudo --preserve-env=USER /usr/bin/env /usr/local/bin/auto_deploygithub_app.sh"

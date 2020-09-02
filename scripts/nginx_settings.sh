@@ -4,7 +4,7 @@ echo "fs.file-max = 500000">>/etc/sysctl.conf
 sudo sysctl -p
 echo -e "*		soft	nofile		102400\n*		hard	nofile		409600\nwww-data	soft	nofile		102400\nwww-data	hard	nofile		409600\n">>/etc/security/limits.conf
 sed -i "s/pid \/run\/nginx.pid;/pid \/run\/nginx.pid;\nworker_rlimit_nofile 102400;/" /etc/nginx/nginx.conf
-sed -i "s/http {/http {\n\tlimit_req_zone \$binary_remote_addr zone=one:10m rate=1r\/s;\n\tlimit_req zone=one burst=100 nodelay;\n\tlimit_conn_zone \$binary_remote_addr zone=two:10m;\n\tlimit_conn two 100;\n\tclient_body_timeout 5s;\n\tclient_header_timeout 5s;\n/" /etc/nginx/nginx.conf
+sed -i "s/http {/http {\n\tlimit_req_zone \$binary_remote_addr zone=ip:10m rate=1r\/s;\n\tlimit_conn_zone \$binary_remote_addr zone=maxcon:10m;\n\tclient_body_timeout 5s;\n\tclient_header_timeout 5s;\n/" /etc/nginx/nginx.conf
 touch /etc/nginx/sites-available/hiddengames
 sudo ln -s /etc/nginx/sites-available/hiddengames /etc/nginx/sites-enabled/
 sudo rm /etc/nginx/sites-enabled/default
@@ -15,6 +15,9 @@ echo "	server_name 192.168.42.2;">>/etc/nginx/sites-available/hiddengames
 echo "	include snippets/self-signed.conf;">>/etc/nginx/sites-available/hiddengames
 echo "	include snippets/ssl-params.conf;">>/etc/nginx/sites-available/hiddengames
 echo "	location / {">>/etc/nginx/sites-available/hiddengames
+echo "#		limit_req zone=ip nodelay;">>/etc/nginx/sites-available/hiddengames
+echo "		limit_req zone=ip burst=5;">>/etc/nginx/sites-available/hiddengames
+echo "		limit_conn maxcon 100;">>/etc/nginx/sites-available/hiddengames
 echo "		proxy_pass http://192.168.42.2:3000;">>/etc/nginx/sites-available/hiddengames
 echo "		proxy_http_version 1.1;">>/etc/nginx/sites-available/hiddengames
 echo '		proxy_set_header Upgrade $http_upgrade;'>>/etc/nginx/sites-available/hiddengames
