@@ -4,7 +4,7 @@
 I did some online research what distribution to choose, and had a contest between Ubuntu Server 20.04 distribution and Debian Linux as minimum installation. Static IP connection proved to be somewhat a hassle to do on Debian as /30 was not working on my home desktop with bridged adapter. At the same time, I was configuring Ubuntu 20.04 to work with NAT and Host-Only Adapter, and that network configuration finally beared a fruit. I downloaded Ubuntu Server from here:
 [Download link](https://ubuntu.com/download/server)
 I also chose Oracle VM's VirtualBox to create the virtual network. For the virtual network interfaces I chose NAT and Host-Only adapter, with vbox0 network with static ip address and subnet mask:
-	ipv4	192.168.56.1
+	ipv4	192.168.42.1
 	subnet	255.255.255.252
 [x] A disk size 8 GB
 - In installer I chose to create 8 GB static VDI.
@@ -33,32 +33,25 @@ you need to pass the current env variables.
 	sudo --preserve-env=USER /usr/bin/env ./add_sudo_priviledges.sh 
 [x] We don’t want you to use the DHCP service of your machine.  You’ve got to configure it to have a static IP and a Netmask in \30.
 - I also configured static ip during the installation. On my first try, I first had dhcp4 automatically set my ip address to fetch packages and edited /etc/netplan/\*.yaml file accordingly.
-	touch configure_netplan.sh
-	chmod 755 configure_netplan.sh
 
-	#!/bin/bash
-	mv /etc/netplan/*.yaml /etc/netplan/*.yaml.backup
-	touch /etc/netplan/00-static-ip-config.yaml
-	echo "network:">>/etc/netplan/00-static-ip-config.yaml
-	echo "  ethernets:">>/etc/netplan/00-static-ip-config.yaml
-	echo "    enp0s3:">>/etc/netplan/00-static-ip-config.yaml
-	echo "      dhcp4: true">>/etc/netplan/00-static-ip-config.yaml
-	echo "    enp0s8:">>/etc/netplan/00-static-ip-config.yaml
-	echo "      addresses:">>/etc/netplan/00-static-ip-config.yaml
-	echo "      - 192.168.42.2/30">>/etc/netplan/00-static-ip-config.yaml
-	echo "      nameservers:">>/etc/netplan/00-static-ip-config.yaml
-	echo "        addresses:">>/etc/netplan/00-static-ip-config.yaml
-	echo "        - 1.1.1.1">>/etc/netplan/00-static-ip-config.yaml
-	echo "        - 1.0.0.1">>/etc/netplan/00-static-ip-config.yaml
-	echo "  version: 2">>/etc/netplan/00-static-ip-config.yaml
-	sudo netplan apply
-	$CURRENT_IP="ip addr show | grep "enp0s8" | grep "inet" | awk '{ print $2 }'"
-	if [[ $CURRENT_IP = "192.168.56.2/30" ]]
-	then
-		echo "Static IP successfully set."
-	else
-		echo "Static IP failed: $CURRENT_IP"
-	fi
+	10.0.2.0/24 default first adapter
+	10.0.2.15/24 default address for NAT
+	10.11.254.254 default gateway (school network, by cable)
+	10.18.254.254 default gateway (school network, by wifi)
+
+	To configure internet connection properly, DNS needs to be set at host-only adapter to:
+	10.51.1.253 default DNS (school network)
+	
+	And NAT needs to be:
+	ip 10.0.2.15
+	network 10.0.2.0/24
+	default gateway 10.0.2.2
+	dns 10.51.1.253 for school
+	and 1.1.1.1 and 1.0.0.1 for home network.
+
+	To see current nameservers what system is using:
+	systemd-resolve --status
+
 [x] You have to change the default port of the SSH service by the one of your choice. SSH access HAS TO be done with publickeys. SSH root access SHOULD NOT be allowed directly, but with a user who can be root.
 - I did a following shell script to change the settings in the server:
 	
@@ -82,7 +75,7 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	sudo ufw allow from 192.168.56.1 proto tcp to any port 50486
 - This allows access from my desktop, and denies inbound connections and allows ones out.
 	sudo ufw allow Nginx Full
-- This allows HTTPS connections for serving the website.
+- This allows HTTP and HTTPS connections for serving the website.
 	sudo ufw enable
 - This enables the firewall.
 - To test that rules work for the firewall, you can delete them by using sudo ufw numbered.
@@ -103,7 +96,6 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	sudo fail2ban-client status <jail-name>
 - I've created custom jails to fail2ban for nginx.
 	sshd:
-
 	
 	http-get-dos:
 	Blocks simple get DoS attacks.
@@ -155,6 +147,7 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	to clear the files, for the ip, it could be achieved with a shell script.
 
 [x] Stop the services you don’t need for this project.
+	- Check running services systemctl list-units --type=service --state=running
 	- I created a shell script called stop_extra_services.sh, which shuts down extra services on the server.
 	- I concluded that services you don't need for this project are following:
 		apt-daily
@@ -193,8 +186,13 @@ or an host(init.login.com for exemple) Choose between nginx and apache.
 - LEMP comes from words Linux, Nginx (pronounced enginex), MySQL and PHP.
 - [Tutorial on installing LEMP stack](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04)
 - I initially felt more inclined to create a webserver with Apache2, but since I've
-already used it, I decided to give nginx a go.
-	
+already used it, I decided to give nginx a go. To configure nginx with new settings one drive in with these commands:
+nginx -s SIGNAL 
+quit – Shut down gracefully
+reload – Reload the configuration file
+reopen – Reopen log files
+stop – Shut down immediately (fast shutdown)
+
 [x] You have to set a self-signed SSL on all of your services.
 - req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
 - openssl x509 -text -noout -in certificate.pem
@@ -260,17 +258,85 @@ List of public cloud service providers in the public cloud:
 NextCloud
 [Watch a Video of the configuration here](https://www.youtube.com/watch?v=lhWSek6zyrs)
 
-- NEXT TASK:
-	- Test that page works agains DoS attacks with nikto!
-	- nikto -h 192.168.56.2 -C all
-	- pingflood, synflood and slowloris.
+- For next assignment:
+- Remember to check that machine has fixed size VM disk of 8Gb. 
+- [x] Configure your virtual machine to work with static ip and bridged adapter
+- [x] Create script to create user with sudo rights in VM.
+- Configure nginx to make sure that your webpage and firewall will survive Slowloris.
+- [x] Check that the open ports correspond to the subject (25, 53, 80, 443, 50486)
+- Check that ALL THE SERVICES have SSL
+- Test with another IP.
 
+- For evaluation:
+Basics:	
+	Run:
+	dpkg -l | grep "docker"
+	dpkg -l | grep "vagrant"
+	dpkg -l | grep "traefik"
 
-FUTURE:
-You can buy a domain name.
-How to attach ip-address to the hostname
-ip address is your host's IP address.
-NextCloud is LearnLinux
-nextcloud to subdomain
-nslookup nextcloud.learnlinux.cloud
-Install a database.
+	Check size:
+	sudo fdisk -l
+	Size should be 8 Gb
+
+	Run sudo apt-get update -y
+	sudo apt-get dist-upgrade -y
+	-> If there are available patches, fail.
+Network and security
+	Run create_sudo_user.sh and copy ssh key.
+- Check that the DHCP service of the VM is deactivated.
+	ps -elf | grep dhclient
+- Choose different netmask than /30 and ask the evaluated person to configure a network 
+connection on the host and guest side. The evaluated person will choose the IPs. If it is not successful this test is failed.
+- Check firewall rules.
+	sudo ufw status
+	They allow following:
+		- 80
+		- 443
+		- ssh port
+	echo "this is a test email" | mail -s "enter the subject" kafkan223@192.168.42.2
+- Run commands to test that everything is still working.
+	nikto -h <ip> -C all
+	slowloris <ip>
+	hping3 -S --flood -V -p 80 <ip>
+	ab -c 5 -n 500 <ip>
+
+	To see open connections:
+	netstat -nalt | grep :80
+	If status has been placed FIN_WAIT_2, that means that remote application has timed out     the connection, which should be the case, if a correct DoS is at in place.
+- To unban ip after attack:
+	sudo fail2ban-client set nginx-limit-req unbanip 192.168.42.1
+	dpkg -l | grep "fail2ban"
+- List open ports.
+	ss -tulwn
+	ss -tulpn
+	
+	25: Mail server, inbound mails are blocked by firewall.
+	53: 127.0.0.53 DNS resolver, ships in with the system. Keeps record of different DNS.
+	80: HTTP for Nginx, forwards to HTTPS.
+	443: HTTPS for Nginx
+	50486: Connects with SSH.
+	3000: Port for Node.js server.
+	3306: Port for Mariadb server.
+
+	nmap -p 1-65535 -T4 -A -v -PE -PS22,25,80 -PA21,23,80 192.168.1.106
+
+- List active services.
+	sudo systemctl list-unit-files --type=service
+	sudo systemctl more
+
+	Show .sh for shutdown programs.
+- Change /etc/crontab file and check if you receive a mail.
+	sudo less /var/mail/root
+
+- Check that there is self signed SSL on all services.
+	SSL is activated on the Nginx, which is only available service on the server to outside from port 443.
+WEB
+- Check that apache2 or nginx is installed.
+- Check that there is only one active configuration on the webserver and it has to listen on 443 or 80.
+- It has to open ip of the server.
+
+DEPLOYMENT
+- How and why did you chose this?
+- Make a minor modification on the site to ensure that deployment is working well.
+- Jenkins.
+- Github webhook.

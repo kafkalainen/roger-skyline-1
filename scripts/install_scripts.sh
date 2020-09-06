@@ -1,5 +1,6 @@
 #!/bin/bash
 sudo /usr/local/bin/ssh_password_off.sh
+sudo dpkg-reconfigure tzdata
 sudo /usr/local/bin/apt_get_minimum_packages.sh
 sudo --preserve-env=USER /usr/bin/env /usr/local/bin/add_sudo_priviledges.sh
 sudo /usr/local/bin/configure_netplan.sh

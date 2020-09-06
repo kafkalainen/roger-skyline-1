@@ -4,14 +4,20 @@ touch /etc/netplan/00-static-ip-config.yaml
 echo "network:">>/etc/netplan/00-static-ip-config.yaml
 echo "  ethernets:">>/etc/netplan/00-static-ip-config.yaml
 echo "    enp0s3:">>/etc/netplan/00-static-ip-config.yaml
-echo "      dhcp4: true">>/etc/netplan/00-static-ip-config.yaml
+echo "      addresses:">>/etc/netplan/00-static-ip-config.yaml
+echo "      - 10.0.2.15/24">>/etc/netplan/00-static-ip-config.yaml
+echo "      gateway4: 10.0.2.2">>/etc/netplan/00-static-ip-config.yaml
+echo "      nameservers:">>/etc/netplan/00-static-ip-config.yaml
+echo "        addresses:">>/etc/netplan/00-static-ip-config.yaml
+echo "        - 10.51.1.253">>/etc/netplan/00-static-ip-config.yaml
+echo "        - 1.1.1.1">>/etc/netplan/00-static-ip-config.yaml
+echo "        - 1.0.0.1">>/etc/netplan/00-static-ip-config.yaml
 echo "    enp0s8:">>/etc/netplan/00-static-ip-config.yaml
 echo "      addresses:">>/etc/netplan/00-static-ip-config.yaml
 echo "      - 192.168.42.2/30">>/etc/netplan/00-static-ip-config.yaml
 echo "      nameservers:">>/etc/netplan/00-static-ip-config.yaml
 echo "        addresses:">>/etc/netplan/00-static-ip-config.yaml
-echo "        - 1.1.1.1">>/etc/netplan/00-static-ip-config.yaml
-echo "        - 1.0.0.1">>/etc/netplan/00-static-ip-config.yaml
+echo "        - 10.51.1.253">>/etc/netplan/00-static-ip-config.yaml
 echo "  version: 2">>/etc/netplan/00-static-ip-config.yaml
 sudo netplan apply
 sleep 2s
