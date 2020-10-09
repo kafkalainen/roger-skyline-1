@@ -4,15 +4,17 @@
 - I did some online research what distribution to choose, and had a contest between Ubuntu Server 20.04 distribution and Debian Linux as minimum installation. Static IP connection proved to be somewhat a hassle to do on Debian as /30 was not working on my home desktop with bridged adapter. At the same time, I was configuring Ubuntu 20.04 to work with NAT and Host-Only Adapter, and that network configuration finally beared a fruit. I downloaded Ubuntu Server from here:
 [Download link](https://ubuntu.com/download/server)
 - I also chose Oracle VM's VirtualBox to create the virtual network. For the virtual network interfaces I chose NAT and Host-Only adapter, with vbox0 network with static ip address and subnet mask:
-	ipv4	192.168.42.1
-	subnet	255.255.255.252
+	`ipv4	192.168.42.1`
+	`subnet	255.255.255.252`
 :heavy_check_mark: A disk size 8 GB
+
 - In installer I chose to create 8 GB static VDI.
 :heavy_check_mark: Have at least one 4.2 Gb partition
+
 - During the Ubuntu installation I chose to create partition of 4.2GB for / and mount the rest for /var, since the website is served from var/www/hiddengames folder.
 :heavy_check_mark: It will also have to be up to date as well as the whole packages installed to meet the demands of this subject.
 - When the installation was complete, I updated the system with:
-	sudo apt-get update -y && sudo apt-get upgrade
+	`sudo apt-get update && sudo apt-get upgrade -y`
 #Network and Security
 :heavy_check_mark: You must create a non-root user to connect to the machine and work.
 - During the installation I created user as a non-root user.
