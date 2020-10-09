@@ -1,9 +1,9 @@
-#Roger-Skyline-1
-##VM-part
+# Roger-Skyline-1
+## VM-part
 [x] Distro and VM
-I did some online research what distribution to choose, and had a contest between Ubuntu Server 20.04 distribution and Debian Linux as minimum installation. Static IP connection proved to be somewhat a hassle to do on Debian as /30 was not working on my home desktop with bridged adapter. At the same time, I was configuring Ubuntu 20.04 to work with NAT and Host-Only Adapter, and that network configuration finally beared a fruit. I downloaded Ubuntu Server from here:
+- I did some online research what distribution to choose, and had a contest between Ubuntu Server 20.04 distribution and Debian Linux as minimum installation. Static IP connection proved to be somewhat a hassle to do on Debian as /30 was not working on my home desktop with bridged adapter. At the same time, I was configuring Ubuntu 20.04 to work with NAT and Host-Only Adapter, and that network configuration finally beared a fruit. I downloaded Ubuntu Server from here:
 [Download link](https://ubuntu.com/download/server)
-I also chose Oracle VM's VirtualBox to create the virtual network. For the virtual network interfaces I chose NAT and Host-Only adapter, with vbox0 network with static ip address and subnet mask:
+- I also chose Oracle VM's VirtualBox to create the virtual network. For the virtual network interfaces I chose NAT and Host-Only adapter, with vbox0 network with static ip address and subnet mask:
 	ipv4	192.168.42.1
 	subnet	255.255.255.252
 [x] A disk size 8 GB
@@ -106,7 +106,6 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 	ab -k -c 5 -n 500 192.168.42.2
 
 	To test no script bot checker:
-
 	http://192.168.42.2/test.asp
 	http://192.168.42.2/test.cgi       < (Response 404 not found)
 	http://192.168.42.2/test.pl         < (Response 404 not found)
@@ -158,27 +157,15 @@ ssh-copy-id -i path-to-public-key kafkan@192.168.55.1 -p 50486
 
 [x] Create a script that updates all the sources of package, then your packages and which logs the whole in a file named /var/log/update_script.log. Create a scheduledtask for this script once a week at 4AM and every time the machine reboots.
 
-	Created first script to run update and upgrade. Update updates apt repositories, that what updates there are to be downloaded in the first place and -y option accepts all.
-	Both are run seperately to get seperate entries to the logfile.
-	#!/bin/bash
-	sudo apt-get update -y >>/var/log/update_script.log
-	sudo apt-get upgrade -y >>/var/log/update_script.log
+- Created first script to run update and upgrade. Update updates apt repositories, that what updates there are to be downloaded in the first place and -y option accepts all.
+Both are run seperately to get seperate entries to the logfile.
 
-	Created auto_update_system_packages.sh, which creates a task with to run:
-	sudo touch /usr/local/bin/update_system_packages.sh
-
-	#!/bin/bash
-	rm /etc/cron.d/update-system-packages
-	touch /etc/cron.d/update-system-packages
-	echo 0 4 * *	root	sudo /usr/local/bin/run_update_packages.sh >>/etc/cron.d/update-system-packages
-	@reboot    root    sudo /usr/local/bin/run_update_packages.sh >>/etc/cron.d/update-system-packages
+- Created auto_update_system_packages.sh, which creates a task with to run:
 
 [x] Make a script to monitor changes of the /etc/crontab file and sends an email to root, if it has been modified. Create a scheduled script task every day at midnight.
-	Created a script to monitor changes in /etc/crontab file by using sha256 checksum of the file.
-	If checksum is changed, the new checksum is saved to /var/log/ to a file, and $diff is sent to root,
-	accompanying with contents of the changed file.
+ - Created a script to monitor changes in /etc/crontab file by using sha256 checksum of the file. If checksum is changed, the new checksum is saved to /var/log/ to a file, and $diff is sent to root, accompanying with contents of the changed file.
 
-##Web part
+## Web part
 - Self-Signed SSL
 [x] You have to set a web server who should BE available on the VM’s IP
 or an host(init.login.com for exemple) Choose between nginx and apache.
@@ -202,7 +189,7 @@ stop – Shut down immediately (fast shutdown)
 [x] You have to set a web "application" from those choices.
 - I have set our outdoor escaperoom's game to the server. 
 
-##Deployment part
+## Deployment part
 [x] Propose a functional solution for deployment automation.
 - I've created scripts that automate server deployment from installation onwards.
 - Set username kafkan223, and set 192.168.42.2 as a static ip.
@@ -214,7 +201,7 @@ stop – Shut down immediately (fast shutdown)
 
 cronjob for automation:
 */1 * * * * cd /home/kafkan223/hiddengames_project && git fetch --all && git checkout --force "origin/master" && /etc/usr/
-##VPS providers
+## VPS providers
 - VPS (Virtual Private Server)
 - VPS also has a firewall to add an extra layer of protection to your server.
 - VPS allows you to give a DNS domain name.
@@ -254,89 +241,58 @@ List of public cloud service providers in the public cloud:
     - CloudStack
     - AltCloud
     - SmartOS
-
-NextCloud
-[Watch a Video of the configuration here](https://www.youtube.com/watch?v=lhWSek6zyrs)
-
-- For next assignment:
-- Remember to check that machine has fixed size VM disk of 8Gb. 
-- [x] Configure your virtual machine to work with static ip and bridged adapter
-- [x] Create script to create user with sudo rights in VM.
-- Configure nginx to make sure that your webpage and firewall will survive Slowloris.
-- [x] Check that the open ports correspond to the subject (25, 53, 80, 443, 50486)
-- Check that ALL THE SERVICES have SSL
-- Test with another IP.
-
-- For evaluation:
-Basics:	
+# Instructions to check that your desktop is correctly configured
+## Basics:	
 	Run:
 	dpkg -l | grep "docker"
 	dpkg -l | grep "vagrant"
 	dpkg -l | grep "traefik"
 
-	Check size:
-	sudo fdisk -l
-	Size should be 8 Gb
-
-	Run sudo apt-get update -y
-	sudo apt-get dist-upgrade -y
-	-> If there are available patches, fail.
-Network and security
-	Run create_sudo_user.sh and copy ssh key.
+## Check size:
+`sudo fdisk -l`
+Size should be 8 Gb
+`sudo apt-get update -y`
+`sudo apt-get dist-upgrade -y`
+-> If there are available patches, fail.
+## Network and security
+Run create_sudo_user.sh and copy ssh key.
 - Check that the DHCP service of the VM is deactivated.
-	ps -elf | grep dhclient
+`ps -elf | grep dhclient`
 - Choose different netmask than /30 and ask the evaluated person to configure a network 
 connection on the host and guest side. The evaluated person will choose the IPs. If it is not successful this test is failed.
 - Check firewall rules.
-	sudo ufw status
-	They allow following:
+`sudo ufw status`
+They allow following:
 		- 80
 		- 443
 		- ssh port
 	echo "this is a test email" | mail -s "enter the subject" kafkan223@192.168.42.2
 - Run commands to test that everything is still working.
-	nikto -h <ip> -C all
-	slowloris <ip>
-	hping3 -S --flood -V -p 80 <ip>
-	ab -c 5 -n 500 <ip>
-
-	To see open connections:
-	netstat -nalt | grep :80
-	If status has been placed FIN_WAIT_2, that means that remote application has timed out     the connection, which should be the case, if a correct DoS is at in place.
+`nikto -h <ip> -C all`
+`slowloris <ip>`
+`hping3 -S --flood -V -p 80 <ip>`
+`ab -c 5 -n 500 <ip>`
+To see open connections:
+`netstat -nalt | grep :80`
+If status has been placed FIN_WAIT_2, that means that remote application has timed out     the connection, which should be the case, if a correct DoS is at in place.
 - To unban ip after attack:
-	sudo fail2ban-client set nginx-limit-req unbanip 192.168.42.1
-	dpkg -l | grep "fail2ban"
+`sudo fail2ban-client set nginx-limit-req unbanip 192.168.42.1`
+`dpkg -l | grep "fail2ban"`
 - List open ports.
-	ss -tulwn
-	ss -tulpn
-	
-	25: Mail server, inbound mails are blocked by firewall.
-	53: 127.0.0.53 DNS resolver, ships in with the system. Keeps record of different DNS.
-	80: HTTP for Nginx, forwards to HTTPS.
-	443: HTTPS for Nginx
-	50486: Connects with SSH.
-	3000: Port for Node.js server.
-	3306: Port for Mariadb server.
+`ss -tulwn`
+`ss -tulpn`	
+25: Mail server, inbound mails are blocked by firewall.
+53: 127.0.0.53 DNS resolver, ships in with the system. Keeps record of different DNS.
+80: HTTP for Nginx, forwards to HTTPS.
+443: HTTPS for Nginx
+50486: Connects with SSH.
+3000: Port for Node.js server.
+3306: Port for Mariadb server.
+`nmap -p 1-65535 -T4 -A -v -PE -PS22,25,80 -PA21,23,80 192.168.1.106`
 
-	nmap -p 1-65535 -T4 -A -v -PE -PS22,25,80 -PA21,23,80 192.168.1.106
+- List active services:
+`sudo systemctl list-unit-files --type=service`
+`sudo systemctl more`
 
-- List active services.
-	sudo systemctl list-unit-files --type=service
-	sudo systemctl more
-
-	Show .sh for shutdown programs.
-- Change /etc/crontab file and check if you receive a mail.
-	sudo less /var/mail/root
-
-- Check that there is self signed SSL on all services.
-	SSL is activated on the Nginx, which is only available service on the server to outside from port 443.
-WEB
-- Check that apache2 or nginx is installed.
-- Check that there is only one active configuration on the webserver and it has to listen on 443 or 80.
-- It has to open ip of the server.
-
-DEPLOYMENT
-- How and why did you chose this?
-- Make a minor modification on the site to ensure that deployment is working well.
-- Jenkins.
-- Github webhook.
+- Roots mail is stored in:
+`sudo less /var/mail/root`
