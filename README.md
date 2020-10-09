@@ -6,15 +6,15 @@
 - I also chose Oracle VM's VirtualBox to create the virtual network. For the virtual network interfaces I chose NAT and Host-Only adapter, with vbox0 network with static ip address and subnet mask:
 	ipv4	192.168.42.1
 	subnet	255.255.255.252
-- [x] A disk size 8 GB
+- :heavy_check_mark: A disk size 8 GB
 - In installer I chose to create 8 GB static VDI.
-- [x] Have at least one 4.2 Gb partition
+- :heavy_check_mark: Have at least one 4.2 Gb partition
 - During the Ubuntu installation I chose to create partition of 4.2GB for / and mount the rest for /var, since the website is served from var/www/hiddengames folder.
-:heavy_check_mark: It will also have to be up to date as well as the whole packages installed to meet the demands of this subject.
+- :heavy_check_mark: It will also have to be up to date as well as the whole packages installed to meet the demands of this subject.
 - When the installation was complete, I updated the system with:
 	sudo apt-get update -y && sudo apt-get upgrade
 #Network and Security
-:heavy_check_mark: You must create a non-root user to connect to the machine and work.
+- :heavy_check_mark: You must create a non-root user to connect to the machine and work.
 - During the installation I created user as a non-root user.
 :heavy_check_mark: Use sudo, with this user, to be able to perform operation requiring special rights.
 - Ubuntu 20.04 comes preinstalled with sudo, and created user kafkan223 
