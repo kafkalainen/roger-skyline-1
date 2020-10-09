@@ -260,8 +260,6 @@ Size should be 8 Gb
 Run create_sudo_user.sh and copy ssh key.
 - Check that the DHCP service of the VM is deactivated.
 `ps -elf | grep dhclient`
-- Choose different netmask than /30 and ask the evaluated person to configure a network 
-connection on the host and guest side. The evaluated person will choose the IPs. If it is not successful this test is failed.
 - Check firewall rules.
 `sudo ufw status`
 They allow following:
